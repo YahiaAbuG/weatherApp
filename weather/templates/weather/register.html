@@ -1,0 +1,22 @@
+{% extends 'weather/base.html' %}
+
+{% block content %}
+
+    <div class="auth-container">
+        <h1>Register</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label>{{ form.username.label }}</label>
+            {{ form.username }}
+
+            <label>{{ form.password1.label }}</label>
+            {{ form.password1 }}
+
+            <label>{{ form.password2.label }}</label>
+            {{ form.password2 }}
+            <input type="submit" value="Register" class="auth-button">
+        </form>
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+
+{% endblock %}

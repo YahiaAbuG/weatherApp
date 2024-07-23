@@ -1,0 +1,110 @@
+{% extends 'weather/base.html' %}
+
+{% block content %}
+
+    <div class="search">
+        <form action="{% url 'current' %}" method="post">
+            {% csrf_token %}
+            <label>Search by Region (Continent, Country, City):
+                <input type="text" placeholder="City" name="city">
+            </label>
+            <button type="submit">Search</button>
+        </form>
+
+        <form action="{% url 'current' %}" method="post">
+            {% csrf_token %}
+            <label>Search by Latitude and Longitude:
+                <input type="text" placeholder="Latitude" name="lat">
+                <input type="text" placeholder="Longitude" name="lon">
+            </label>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="header-section">
+        {% if error == 1 %}
+            <h1>Incorrect Search. Try Again.</h1>
+        {% elif weather_data and weather_data.city %}
+            <h1>{{ weather_data.city }}</h1>
+        {% elif weather_list %}
+            <h1>Your Weather List:</h1>
+        {% else %}
+            <h1>Search for Weather Conditions</h1>
+        {% endif %}
+    </div>
+
+    {% if weather_data %}
+        <a href="{% url 'current' %}" class="go-back-button">&#8592; Go Back</a>
+
+        <div class="main-weather">
+            <h1>{{ weather_data.weather }}</h1>
+            <h2>{{ weather_data.description }}</h2>
+            <img src="{{ weather_data.icon }}" alt="">
+            <h3>{{ weather_data.air_temp }}°C</h3>
+            <h4>Feels Like: {{ weather_data.feels_like }}°C</h4>
+            {% if add_option == 1 %}
+                <form action="{% url 'add' weather_data.city weather_data.lat weather_data.lon %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Add to List</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="atmospheric-section">
+            <h1>Atmospheric Conditions</h1>
+            <p>Pressure: {{ weather_data.pressure }} hPa</p>
+            <p>Cloud Cover: {{ weather_data.cloud_cover }}%</p>
+            <p>Humidity: {{ weather_data.humidity }}%</p>
+            <p>Visibility: {{ weather_data.visibility }} km</p>
+            <p>Precipitation: {{ weather_data.precipitation }} mm</p>
+        </div>
+
+        <div class="wind-section">
+            <h1>Wind Conditions</h1>
+            <p>Wind Speed: {{ weather_data.wind_speed }} km/h</p>
+            <p>Gust: {{ weather_data.wind_gust }} km/h</p>
+            <p>Direction: {{ weather_data.wind_degree }}° ({{ weather_data.wind_direction }})</p>
+        </div>
+
+        <div class="temperature-section">
+            <h1>Hourly Forecast</h1>
+            <div class="hourly-forecast">
+                {% for hour in weather_data.hours %}
+                    <div class="hour-box">
+                        <img src="{{ hour.icon }}">
+                        <h1>{{ hour.temp }}°C</h1>
+                        <h2>{% if hour.hour != hour.localtime %}{{ hour.hour }}:00{% else %}Now{% endif %}</h2>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% elif weather_list %}
+
+        <div class="weather-list">
+            {% for weather in weather_list %}
+
+                <div class="summary-box current">
+                    <h1>{{ weather.city }}</h1>
+                    <h2>{{ weather.weather.description }}</h2>
+                    <img src="{{ weather.weather.icon }}">
+                    <h3>{{ weather.weather.air_temp }}°C</h3>
+                    <h4>Feels Like: {{ weather.weather.feels_like }}°C</h4>
+
+                    <form action="{% url 'current' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="city" value="{{ weather.city }}">
+                        <button type="submit">Go to Current Weather</button>
+                    </form>
+
+                    <form action="{% url 'delete' weather.city weather.weather.lat weather.weather.lon %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Remove From List</button>
+                    </form>
+                </div>
+
+            {% endfor %}
+        </div>
+
+    {% endif %}
+
+{% endblock %}

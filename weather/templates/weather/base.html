@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #6dd5ed, #2193b0);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+        }
+
+        /* Header bar */
+        .header-bar {
+            width: 100%;
+            background: linear-gradient(to right, #43cea2, #185a9d);
+            color: white;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-bar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.2em;
+            transition: color 0.3s ease;
+        }
+
+        .header-bar a:hover {
+            color: #ffd700;
+        }
+
+        .header-bar form {
+            display: inline;
+            margin: 0 10px;
+        }
+
+        .header-bar button {
+            padding: 10px 20px;
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        .header-bar button:hover {
+            background: linear-gradient(to right, #ff4b2b, #ff416c);
+        }
+
+        /* Search section */
+        .search {
+            margin: 20px 0;
+        }
+
+        .search form {
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .search input[type="text"] {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search button {
+            padding: 10px 20px;
+            background: linear-gradient(to right, #4CAF50, #2c7d36);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search button:hover {
+            background: linear-gradient(to right, #45a049, #2c7d36);
+        }
+
+        /* Header section */
+        .header-section {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .header-section h1 {
+            font-size: 2em;
+            margin: 0;
+        }
+
+        /* Temperature and atmospheric sections */
+        .main-weather, .temperature-section, .atmospheric-section, .wind-section, .precip {
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .main-weather h1 {
+            font-size: 1.5em;
+        }
+
+        .main-weather h2 {
+            font-size: 1.2em;
+            color: #ddd;
+        }
+
+        .temperature-section .hourly-forecast {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px; /* Adjust the gap between boxes as needed */
+        }
+
+        .temperature-section .hour-box {
+            width: 120px; /* Adjust box width as needed */
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #185a9d;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .temperature-section .hour-box img {
+            width: 50px; /* Adjust image size as needed */
+            height: 50px;
+        }
+
+        .temperature-section .hour-box h1 {
+            font-size: 1.5em;
+            margin: 5px 0;
+        }
+
+        .temperature-section .hour-box h2 {
+            font-size: 1em;
+            margin: 5px 0;
+        }
+
+        .atmospheric-section h1, .wind-section h1 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .atmospheric-section p, .wind-section p {
+            margin: 5px 0;
+            font-size: 1em;
+            color: #fff;
+        }
+
+        .precip {
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .precip p {
+            font-size: 1.2em;
+            color: #fff;
+        }
+
+        /* Daily Forecast */
+        .daily-forecast {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px; /* Adjust the gap between day boxes */
+        }
+
+        .day-box {
+            background-color: #3792cb;
+            border-radius: 10px;
+            padding: 20px;
+            width: 250px; /* Adjust box width as needed */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: white;
+        }
+
+        .day-box img {
+            width: 50px; /* Adjust image size as needed */
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .day-box h1 {
+            font-size: 1.5em;
+            margin: 5px 0;
+        }
+
+        .day-box h2 {
+            font-size: 1em;
+            margin: 5px 0;
+        }
+
+        .day-box h3 {
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .day-box h4 {
+            font-size: 0.8em;
+            margin: 5px 0;
+        }
+
+        /* Styling for the weather-list div */
+        .weather-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .weather-list .summary-box {
+            background-color: #3792cb;
+            border: 1px solid #3792cb;
+            border-radius: 10px;
+            padding: 20px;
+            width: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .weather-list .current {
+            width: 250px;
+        }
+
+        .weather-list .summary-box h1 {
+            font-size: 1.5em;
+            margin: 10px 0;
+            word-wrap: break-word;
+        }
+
+        .weather-list .summary-box h2 {
+            font-size: 1.2em;
+            margin: 10px 0;
+            word-wrap: break-word;
+        }
+
+        .weather-list .summary-box img {
+            max-width: 100px;
+            margin: 10px 0;
+        }
+
+        .weather-list .summary-box h3 {
+            font-size: 1.4em;
+            margin: 10px 0;
+        }
+
+        .weather-list .summary-box h4 {
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+
+        .weather-list .summary-box form {
+            margin-top: 15px;
+        }
+
+        .weather-list .summary-box button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .weather-list .summary-box button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Styles for the summary box */
+
+        .summary-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            background-color: #4cb0c4;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-box h1, .summary-box h2, .summary-box h3, .summary-box p {
+            margin: 5px 0;
+        }
+
+        .summary-box .day-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .summary-box .day img {
+            max-width: 50px;
+        }
+
+        /* Styles for the day forecast */
+        .summary-box .day {
+            flex: 1;
+            text-align: center;
+            margin: 0 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        /* Button styles */
+        .summary-box form {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .summary-box button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .summary-box button:hover {
+            background-color: #0056b3;
+        }
+
+
+        /* Styling for the button in the main-weather div */
+        .main-weather button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .main-weather button:hover {
+            background-color: #0056b3;
+        }
+
+        .temperature-section button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .temperature-section button:hover {
+            background-color: #0056b3;
+        }
+
+        .go-back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .go-back-button:hover {
+            background-color: #0056b3;
+        }
+
+
+        /* Auth container for login and registration pages */
+        .auth-container {
+            background: linear-gradient(to right, #6dd5ed, #2193b0);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .auth-container h1 {
+            margin-bottom: 20px;
+            font-size: 2em;
+            color: white;
+        }
+
+        .auth-container form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .auth-container label {
+            color: white;
+            font-size: 1em;
+            margin-top: 10px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .auth-container input[type="text"],
+        .auth-container input[type="password"],
+        .auth-container input[type="submit"] {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+            max-width: 300px;
+            box-sizing: border-box;
+        }
+
+        .auth-container input[type="submit"] {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .auth-container input[type="submit"]:hover {
+            background: linear-gradient(to right, #ff4b2b, #ff416c);
+        }
+
+        .auth-container p {
+            color: white;
+            margin-top: 20px;
+        }
+
+        .auth-container a {
+            color: #ffd700;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .auth-container a:hover {
+            color: #ffdd00;
+        }
+
+    </style>
+
+
+</head>
+<body>
+
+<div class="header-bar">
+
+    <a href="{% url 'current' %}">Current Weather</a>
+    <a href="{% url 'forecasts' %}">Forecasts</a>
+    <a href="{% url 'historical-data' %}">Historical Data</a>
+
+    {% if request.user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    {% else %}
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Login</button>
+        </form>
+    {% endif %}
+</div>
+
+{% block content %}
+
+{% endblock %}
+
+</body>
+</html>

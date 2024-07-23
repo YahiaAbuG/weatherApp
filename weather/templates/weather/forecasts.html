@@ -1,0 +1,99 @@
+{% extends 'weather/base.html' %}
+
+{% block content %}
+
+    <div class="search">
+        <form action="{% url 'forecasts' %}" method="post">
+            {% csrf_token %}
+            <label>Search by Region (Continent, Country, City):
+                <input type="text" placeholder="City" name="city">
+            </label>
+            <button type="submit">Search</button>
+        </form>
+
+        <form action="{% url 'forecasts' %}" method="post">
+            {% csrf_token %}
+            <label>Search by Latitude and Longitude:
+                <input type="text" placeholder="Latitude" name="lat">
+                <input type="text" placeholder="Longitude" name="lon">
+            </label>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="header-section">
+        {% if error == 1 %}
+            <h1>Incorrect Search. Try Again.</h1>
+        {% elif weather_data and weather_data.city %}
+            <h1>{{ weather_data.city }}</h1>
+        {% elif weather_list %}
+            <h1>Your Forecast List:</h1>
+        {% else %}
+            <h1>Search for Weather Forecasts</h1>
+        {% endif %}
+    </div>
+
+    {% if weather_data %}
+        <a href="{% url 'forecasts' %}" class="go-back-button">&#8592; Go Back</a>
+
+        <div class="temperature-section">
+            {% if add_option == 1 %}
+                <form action="{% url 'add' weather_data.city weather_data.lat weather_data.lon %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Add to List</button>
+                </form>
+            {% endif %}
+            <h1>Daily Forecast</h1>
+            <div class="daily-forecast">
+                {% for day in weather_data.days %}
+                    <div class="day-box">
+                        <h1>{{ day.day }}</h1>
+                        <img src="{{ day.icon }}">
+                        <h2>High: {{ day.maxtemp }}°C Low: {{ day.mintemp }}°C</h2>
+                        <h3>{{ day.text }}</h3>
+                        <h4>Precipitation: {{ day.precipitation }} mm</h4>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    {% elif weather_list %}
+
+        <div class="weather-list">
+            {% for weather in weather_list %}
+
+                <div class="summary-box">
+                    <h1>{{ weather.city }}</h1>
+                    <h2>{{ weather.weather.days.0.text }}</h2>
+                    <img src="{{ weather.weather.today.icon }}">
+                    <h3>{{ weather.weather.today.air_temp }}°C</h3>
+                    <div class="day-container">
+                        {% for day in weather.weather.days %}
+                            {% if day != weather.weather.days|first %}
+                                <div class="day">
+                                    <p>{{ day.day }}</p>
+                                    <img src="{{ day.icon }}">
+                                    <p>H: {{ day.maxtemp }}°C L: {{ day.mintemp }}°C</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <form action="{% url 'forecasts' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="city" value="{{ weather.city }}">
+                        <button type="submit">Go to 7-Day Forecast</button>
+                    </form>
+
+                    <form action="{% url 'delete' weather.city weather.weather.lat weather.weather.lon %}"
+                          method="post">
+                        {% csrf_token %}
+                        <button type="submit">Remove From List</button>
+                    </form>
+                </div>
+
+            {% endfor %}
+        </div>
+
+    {% endif %}
+
+{% endblock %}

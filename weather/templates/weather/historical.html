@@ -1,0 +1,65 @@
+{% extends 'weather/base.html' %}
+
+{% block content %}
+
+    <div class="search">
+        <form action="{% url 'historical-data' %}" method="post">
+            {% csrf_token %}
+            <label>Search by Region (Continent, Country, City):
+                <input type="text" placeholder="City" name="city">
+            </label>
+
+            <label>Search by Latitude and Longitude:
+                <input type="text" placeholder="Latitude" name="lat">
+                <input type="text" placeholder="Longitude" name="lon">
+            </label>
+
+            <label>Input Date
+                <input type="date" name="date" min="{{ mindate }}" max="{{ today }}">
+            </label>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="header-section">
+        {% if error %}
+            <h1>Incorrect Search. Try Again.</h1>
+        {% elif weather_data.city %}
+            <h1>{{ weather_data.city }}</h1>
+        {% else %}
+            <h1>Search for Weather Conditions From The Last 365 Days</h1>
+        {% endif %}
+    </div>
+
+    {% if weather_data %}
+        <a href="{% url 'historical-data' %}" class="go-back-button">&#8592; Go Back</a>
+
+        <div class="main-weather">
+            <h1>{{ weather_data.weather }}</h1>
+            <img src="{{ weather_data.icon }}" alt="">
+            <h2>Avg: {{ weather_data.avgtemp }}°C</h2>
+            <h3>High: {{ weather_data.maxtemp }}°C  Low: {{ weather_data.mintemp }}°C</h3>
+        </div>
+
+        <div class="atmospheric-section">
+            <h1>Weather Conditions</h1>
+            <p>Humidity: {{ weather_data.humidity }}%</p>
+            <p>Visibility: {{ weather_data.visibility }} km</p>
+            <p>Wind Speed: {{ weather_data.wind_speed }} km/h</p>
+        </div>
+
+        <div class="temperature-section">
+            <h1>Weather By Hour</h1>
+            <div class="hourly-forecast">
+                {% for hour in weather_data.hours %}
+                    <div class="hour-box">
+                        <img src="{{ hour.icon }}">
+                        <h1>{{ hour.temp }}°C</h1>
+                        <h2>{{ hour.hour }}:00</h2>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}
